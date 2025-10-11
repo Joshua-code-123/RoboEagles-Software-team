@@ -1,0 +1,113 @@
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvPipeline;
+import org.openftc.easyopencv.OpenCvWebcam;
+
+// In your OpMode
+public class LineFollowerOpMode extends LinearOpMode {
+    OpenCvWebcam webcam;
+    LineDetectionPipeline pipeline;
+    DcMotor leftDrive, rightDrive;
+
+    @Override
+    public void runOpMode() {
+        // Initialize motors
+        leftDrive = hardwareMap.get(DcMotor.class, "left_drive");
+        rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
+        leftDrive.setDirection(DcMotorSimple.Direction.REVERSE); // Adjust as needed
+
+        // Initialize webcam and pipeline
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+                "cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(
+                hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        pipeline = new LineDetectionPipeline();
+        webcam.setPipeline(pipeline);
+
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+            }
+
+            @Override
+            public void onError(int errorCode) {
+                // Handle error
+            }
+        });
+
+        waitForStart();
+
+        while (opModeIsActive()) {
+            double error = pipeline.getLineOffset(); // Get error from pipeline
+            double turnPower = Kp * error; // Simplified P control
+
+            double leftPower = BASE_DRIVE_POWER + turnPower;
+            double rightPower = BASE_DRIVE_POWER - turnPower;
+
+            leftDrive.setPower(leftPower);
+            rightDrive.setPower(rightPower);
+
+            telemetry.addData("Line Offset", error);
+            telemetry.update();
+        }
+
+        webcam.stopStreaming();
+        webcam.closeCameraDevice();
+    }
+
+    // Define constants like BASE_DRIVE_POWER, Kp, etc.
+    private static final double BASE_DRIVE_POWER = 0.3;
+    private static final double Kp = 0.05; // Proportional constant
+}
+
+// Your custom OpenCvPipeline
+class LineDetectionPipeline extends OpenCvPipeline {
+    Mat grayMat = new Mat();
+    Mat binaryMat = new Mat();
+    double lineOffset = 0.0;
+
+    @Override
+    public Mat processFrame(Mat input) {
+        Imgproc.cvtColor(input, grayMat, Imgproc.COLOR_RGB2GRAY);
+        Imgproc.threshold(grayMat, binaryMat, 100, 255, Imgproc.THRESH_BINARY); // Adjust threshold
+
+        // Find contours or centroid to determine line position
+        // For simplicity, let's assume we're looking for the brightest column
+        int centerColumn = binaryMat.cols() / 2;
+        int maxBrightnessCol = 0;
+        double maxBrightness = 0;
+
+        for (int c = 0; c < binaryMat.cols(); c++) {
+            double brightnessSum = 0;
+            for (int r = 0; r < binaryMat.rows(); r++) {
+                brightnessSum += binaryMat.get(r, c)[0];
+            }
+            if (brightnessSum > maxBrightness) {
+                maxBrightness = brightnessSum;
+                maxBrightnessCol = c;
+            }
+        }
+
+        lineOffset = (double) (maxBrightnessCol - centerColumn) / centerColumn; // Normalize offset
+
+        // Optional: Draw on the input Mat for visualization
+        Imgproc.line(input, new Point(maxBrightnessCol, 0), new Point(maxBrightnessCol, input.rows()), new Scalar(0, 255, 0), 2);
+
+        return input; // Return the processed frame for display
+    }
+
+    public double getLineOffset() {
+        return lineOffset;
+    }
+}
