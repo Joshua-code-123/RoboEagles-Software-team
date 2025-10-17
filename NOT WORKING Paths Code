@@ -1,0 +1,31 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.ftc.Actions;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+@Autonomous(name="Testing Paths")
+public final class TestingPaths extends LinearOpMode {
+
+    @Override
+    public void runOpMode() throws InterruptedException {
+        Pose2d beginPose = new Pose2d(-60, 60, 0);
+        MecanumDrive drive = new MecanumDrive(hardwareMap, beginPose);
+
+        waitForStart();
+
+        Actions.runBlocking(
+                drive.actionBuilder(beginPose)
+                        .turn(Math.toRadians(-45))
+                        .lineToX(-10)
+                        .turn(Math.toRadians(180))
+                        .waitSeconds(2)
+                        .lineToX(60)
+                        .waitSeconds(5)
+                        .lineToY(10)
+                        .waitSeconds(2)
+                        .build());
+    }
+}
