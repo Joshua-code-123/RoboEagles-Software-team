@@ -1,0 +1,103 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.IMU;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+
+@Autonomous(name="ForwardTurnRight", group="Robot")
+public class ForwardTurnRight extends LinearOpMode {
+
+    private DcMotor leftFront, leftRear, rightFront, rightRear;
+    private IMU imu;
+
+    @Override
+    public void runOpMode() {
+        // Initialize motors
+        leftFront = hardwareMap.get(DcMotor.class, "left_front_motor");
+        leftRear = hardwareMap.get(DcMotor.class, "left_rear_motor");
+        rightFront = hardwareMap.get(DcMotor.class, "right_front_motor");
+        rightRear = hardwareMap.get(DcMotor.class, "right_rear_motor");
+
+        // Set motor directions (adjust as needed for your robot)
+        leftFront.setDirection(DcMotor.Direction.REVERSE);
+        leftRear.setDirection(DcMotor.Direction.REVERSE);
+        rightFront.setDirection(DcMotor.Direction.FORWARD);
+        rightRear.setDirection(DcMotor.Direction.FORWARD);
+
+        // Initialize IMU
+        imu = hardwareMap.get(IMU.class, "imu");
+        IMU.Parameters parameters = new IMU.Parameters(new com.qualcomm.hardware.bosch.BNO055IMU.Parameters()); // For BNO055 IMU
+        imu.initialize(parameters);
+        imu.resetYaw(); // Reset the IMU's yaw angle to 0
+
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
+
+        waitForStart();
+
+        if (opModeIsActive()) {
+            // Move forward
+            moveForward(0.5, 2.0); // Power 0.5 for 2 seconds
+            
+            // Turn 90 degrees right
+            turnToHeading(90.0, 0.5); // Target heading 90 degrees, turn power 0.5
+        }
+    }
+
+    // Method to move the robot forward
+    private void moveForward(double power, double time) {
+        leftFront.setPower(power);
+        leftRear.setPower(power);
+        rightFront.setPower(power);
+        rightRear.setPower(power);
+        sleep((long) (time * 1000)); // Convert seconds to milliseconds
+        stopMotors();
+    }
+
+    // Method to turn the robot to a specific heading
+    private void turnToHeading(double targetHeading, double turnPower) {
+        double currentHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+        double error = targetHeading - currentHeading;
+
+        // Normalize error to be between -180 and 180 degrees
+        while (error > 180) error -= 360;
+        while (error <= -180) error += 360;
+
+        while (opModeIsActive() && Math.abs(error) > 5) { // Loop until within 5 degrees of target
+            if (error > 0) { // Turn right
+                leftFront.setPower(turnPower);
+                leftRear.setPower(turnPower);
+                rightFront.setPower(-turnPower);
+                rightRear.setPower(-turnPower);
+            } else { // Turn left
+                leftFront.setPower(-turnPower);
+                leftRear.setPower(-turnPower);
+                rightFront.setPower(turnPower);
+                rightRear.setPower(turnPower);
+            }
+
+            currentHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+            error = targetHeading - currentHeading;
+            while (error > 180) error -= 360;
+            while (error <= -180) error += 360;
+
+            telemetry.addData("Current Heading", currentHeading);
+            telemetry.addData("Error", error);
+            telemetry.update();
+        }
+        stopMotors();
+    }
+
+    // Method to stop all motors
+    private void stopMotors() {
+        leftFront.setPower(0);
+        leftRear.setPower(0);
+        rightFront.setPower(0);
+        rightRear.setPower(0);
+    }
+}
