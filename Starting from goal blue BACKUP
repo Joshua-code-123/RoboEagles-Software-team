@@ -1,0 +1,63 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+
+@Autonomous(name="Starting From Goal Blue BACKUP", group="Robot")
+public class StartingFromGoalBlue_BACKUP extends LinearOpMode {
+
+    private DcMotor leftFrontDrive = null;
+    private DcMotor rightFrontDrive = null;
+    private DcMotor leftBackDrive = null;
+    private DcMotor rightBackDrive = null;
+
+    @Override
+    public void runOpMode() {
+
+        // Initialize the hardware variables. Note that the strings used here as parameters
+        // to 'get' must correspond to the names assigned during robot configuration.
+        leftFrontDrive  = hardwareMap.get(DcMotor.class, "LF");
+        rightFrontDrive = hardwareMap.get(DcMotor.class, "RF");
+        leftBackDrive  = hardwareMap.get(DcMotor.class, "LB");
+        rightBackDrive = hardwareMap.get(DcMotor.class, "RB");
+
+        // Most robots need the motor on one side to be reversed to drive forward.
+        // Reverse the motor that runs backwards when connected directly to the battery.
+        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
+
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
+
+        // Wait for the game to start (driver presses PLAY)
+        waitForStart();
+
+        // --- Drive backward 8 feet ---
+        // These values (power and duration) need to be determined experimentally for your robot.
+        double drivePower = 0.5; // Example power
+        long driveDurationMs = 3000; // Example duration for 8 feet
+
+        setDrivePower(-drivePower, -drivePower, -drivePower, -drivePower);
+        sleep(driveDurationMs);
+        stopDriveMotors();
+
+        telemetry.addData("Status", "Done");
+        telemetry.update();
+    }
+
+    // Helper method to set power to all drive motors
+    public void setDrivePower(double lfPower, double rfPower, double lbPower, double rbPower) {
+        leftFrontDrive.setPower(lfPower);
+        rightFrontDrive.setPower(rfPower);
+        leftBackDrive.setPower(lbPower);
+        rightBackDrive.setPower(rbPower);
+    }
+
+    // Helper method to stop all drive motors
+    public void stopDriveMotors() {
+        setDrivePower(0, 0, 0, 0);
+    }
+}
