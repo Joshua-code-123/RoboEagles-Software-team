@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@Autonomous(name="Starting From Goal B", group="Robot")
+@Autonomous(name="Starting From Goal Blue", group="Robot")
 public class StartingFromGoalBlue extends LinearOpMode {
 
     private DcMotor leftFrontDrive = null;
@@ -37,8 +37,8 @@ public class StartingFromGoalBlue extends LinearOpMode {
 
         // --- Drive Forward 4 feet ---
         // These values (power and duration) need to be determined experimentally for your robot.
-        double drivePower = 0.5/2; // Example power
-        long driveDurationMs = 1000; // Example duration for 4 feet
+        double drivePower = 0.5; // Example power
+        long driveDurationMs = 1500; // Example duration for 4 feet
 
         setDrivePower(-drivePower, -drivePower, -drivePower, -drivePower);
         sleep(driveDurationMs);
@@ -48,8 +48,8 @@ public class StartingFromGoalBlue extends LinearOpMode {
         sleep(2000);
 
         //Turn to face the loading zone
-        double turnPower = -0.5/2; // Example power
-        long turnDurationMs = 67; // Example duration for turn
+        double turnPower = -0.5; // Example power
+        long turnDurationMs = 50; // Example duration for turn
 
         // To turn left, the left side motors go forward and the right side motors go backward.
         setDrivePower(-turnPower, turnPower, -turnPower, turnPower);
@@ -57,14 +57,14 @@ public class StartingFromGoalBlue extends LinearOpMode {
         stopDriveMotors();
 
         //Go back to loading zone
-        driveDurationMs = 3900; // Example duration for 6 feet
+        driveDurationMs = 2300; // Example duration for 6 feet
 
 
         setDrivePower(-drivePower, -drivePower, -drivePower, -drivePower);
         sleep(driveDurationMs);
         stopDriveMotors();
 
-        //wait 5 seconds in the loading zone
+        //wait 3 seconds in the loading zone
         sleep(3000);
 
 
@@ -74,12 +74,21 @@ public class StartingFromGoalBlue extends LinearOpMode {
         sleep(driveDurationMs);
 
         //Turn to face the goal again and end
-        turnPower = -0.5/2; // Example power
+        turnPower = -0.5; // Example power
         turnDurationMs = 50; // Example duration for turn
 
         // To turn right, the left side motors go forward and the right side motors go backward.
         setDrivePower(turnPower, -turnPower, turnPower, -turnPower);
         sleep(turnDurationMs);
+        stopDriveMotors();
+
+        // --- Drive backward 8 feet ---
+        // These values (power and duration) need to be determined experimentally for your robot.
+        drivePower = 0.5; // Example power
+        driveDurationMs = 3000; // Example duration for 8 feet
+
+        setDrivePower(-drivePower, -drivePower, -drivePower, -drivePower);
+        sleep(driveDurationMs);
         stopDriveMotors();
 
 
