@@ -1,0 +1,92 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+
+@Autonomous(name = "Starting from Blue up side", group = "Autonomous")
+public class StartingFromBlueSide extends LinearOpMode {
+    private DcMotor frontLeft;
+    private DcMotor frontRight;
+    private DcMotor backLeft;
+    private DcMotor backRight;
+
+    @Override
+    public void runOpMode() {
+        frontLeft  = hardwareMap.get(DcMotor.class, "LF");
+        frontRight = hardwareMap.get(DcMotor.class, "RF");
+        backLeft   = hardwareMap.get(DcMotor.class, "LB");
+        backRight  = hardwareMap.get(DcMotor.class, "RB");
+
+        frontLeft.setDirection(DcMotor.Direction.REVERSE);
+        backLeft.setDirection(DcMotor.Direction.REVERSE);
+        frontRight.setDirection(DcMotor.Direction.FORWARD);
+        backRight.setDirection(DcMotor.Direction.FORWARD);
+
+        setAllDrivePower(0.0);
+
+        waitForStart();
+        if (!opModeIsActive()) return;
+
+        final double drivePower = 0.41/2;
+        final double turnPower  = 0.22/2;
+        final double tf  = 0.12/2;
+        final long sixFeetMs    = 2700;
+        final long turn45Ms     = 600;
+        final long aa = 4600;
+        final long bb = 5750;
+        final long sixFeet = 1000;
+
+        mecanumDriveTimed(drivePower, 0.0, 0.0, sixFeetMs);
+        mecanumDriveTimed(0.0, 0.0, -turnPower, turn45Ms);
+        waitMillis(2500);
+        mecanumDriveTimed(drivePower, 0.0, 0.0, sixFeet);
+        waitMillis(1000);
+        mecanumDriveTimed(-drivePower, 0.0, 0.0, aa);
+        waitMillis(1000);
+        mecanumDriveTimed(0.0, 0.0, turnPower, tf);
+        waitMillis(2500);
+        mecanumDriveTimed(drivePower, 0.0, 0.0, bb);
+        waitMillis(4500);
+        mecanumDriveTimed(-drivePower, 0.0, 0.0, sixFeetMs);
+        waitMillis(4500);
+        mecanumDriveTimed(-drivePower, 0.0, 0.0, sixFeet);
+        setAllDrivePower(0.0);
+    }
+
+    private void mecanumDriveTimed(double forward, double strafe, double rotate, double durationMs) {
+        double fl = forward + strafe + rotate;
+        double fr = forward - strafe - rotate;
+        double bl = forward - strafe + rotate;
+        double br = forward + strafe - rotate;
+
+        double max = Math.max(1.0, Math.max(Math.abs(fl), Math.max(Math.abs(fr), Math.max(Math.abs(bl), Math.abs(br)))));
+        fl /= max; fr /= max; bl /= max; br /= max;
+
+        frontLeft.setPower(fl);
+        frontRight.setPower(fr);
+        backLeft.setPower(bl);
+        backRight.setPower(br);
+
+        long start = System.currentTimeMillis();
+        while (opModeIsActive() && (System.currentTimeMillis() - start) < durationMs) {
+            idle();
+        }
+
+        setAllDrivePower(0.0);
+    }
+
+    private void setAllDrivePower(double p) {
+        frontLeft.setPower(p);
+        frontRight.setPower(p);
+        backLeft.setPower(p);
+        backRight.setPower(p);
+    }
+
+    private void waitMillis(long ms) {
+        long start = System.currentTimeMillis();
+        while (opModeIsActive() && (System.currentTimeMillis() - start) < ms) {
+            idle();
+        }
+    }
+}
