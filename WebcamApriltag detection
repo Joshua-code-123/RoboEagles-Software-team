@@ -1,0 +1,58 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+
+import java.util.List;
+
+@TeleOp(name="AprilTag Webcam Demo", group="FTC")
+public class AprilTagWebcamDemo extends LinearOpMode {
+
+    private AprilTagProcessor aprilTag;
+    private VisionPortal visionPortal;
+
+    @Override
+    public void runOpMode() {
+        // Initialize the AprilTag processor.
+        aprilTag = new AprilTagProcessor.Builder().build();
+
+        // Initialize the VisionPortal.
+        visionPortal = new VisionPortal.Builder()
+                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                .addProcessor(aprilTag)
+                .build();
+
+        // Tell the driver station that initialization is complete.
+        telemetry.addData("Status", "Initialized. Waiting for start.");
+        telemetry.update();
+
+        waitForStart();
+
+        while (opModeIsActive()) {
+            List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+
+            // Check if any AprilTags are detected.
+            if (currentDetections.isEmpty()) {
+                telemetry.addData("Status", "No AprilTags detected.");
+            } else {
+                telemetry.addData("Status", "AprilTags detected.");
+                for (AprilTagDetection detection : currentDetections) {
+                    if (detection.metadata != null) {
+                        telemetry.addData("Tag ID", detection.id);
+                        telemetry.addData("X, Y, Z", String.format("%.0f, %.0f, %.0f",
+                                detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
+
+                    }
+                }
+            }
+            telemetry.update();
+        }
+
+        // Close the vision portal to release resources.
+        visionPortal.close();
+    }
+}
