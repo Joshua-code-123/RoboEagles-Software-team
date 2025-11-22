@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name="Robot: Testing Red Goal Encoders", group="Robot")
+@Autonomous(name="Robot: Wait 2s then Drive Forward", group="Robot")
 @Disabled
 public class EncodersTestingRedSide extends LinearOpMode {
 
@@ -29,8 +29,8 @@ public class EncodersTestingRedSide extends LinearOpMode {
     public void runOpMode() {
 
         // Initialize motors
-        leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
-        rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
+        leftDrive  = hardwareMap.get(DcMotor.class, "LF");
+        rightDrive = hardwareMap.get(DcMotor.class, "RF");
 
         leftDrive.setDirection(DcMotor.Direction.REVERSE);
         rightDrive.setDirection(DcMotor.Direction.FORWARD);
