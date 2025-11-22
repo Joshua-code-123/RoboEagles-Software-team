@@ -18,7 +18,7 @@ public class EncodersTestingRedGoal extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
 
-    static final double COUNTS_PER_MOTOR_REV = 384.5;   
+    static final double COUNTS_PER_MOTOR_REV = 384.5;
     static final double DRIVE_GEAR_REDUCTION = 1.0;     // No External Gearing
     static final double WHEEL_DIAMETER_INCHES = 4.0;    // Wheel diameter
     static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
@@ -29,8 +29,8 @@ public class EncodersTestingRedGoal extends LinearOpMode {
     public void runOpMode() {
 
         // Initialize motors
-        leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
-        rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
+        leftDrive  = hardwareMap.get(DcMotor.class, "LF");
+        rightDrive = hardwareMap.get(DcMotor.class, "RF");
 
         leftDrive.setDirection(DcMotor.Direction.REVERSE);
         rightDrive.setDirection(DcMotor.Direction.FORWARD);
@@ -48,7 +48,7 @@ public class EncodersTestingRedGoal extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        //  Step 1: Go backward 
+        //  Step 1: Go backward
         encoderDrive(DRIVE_SPEED, -34, -34, 5.0);
 
         //  Step 2: Shoot for 2 secs
