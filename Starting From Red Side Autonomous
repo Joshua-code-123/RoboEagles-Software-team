@@ -1,0 +1,132 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.CRServo;
+
+
+@Autonomous(name="Starting From Red up side", group="Robot")
+public class StartingFromRedSide extends LinearOpMode {
+
+    private DcMotor leftFrontDrive = null;
+    private DcMotor rightFrontDrive = null;
+    private DcMotor leftBackDrive = null;
+    private DcMotor rightBackDrive = null;
+
+    private DcMotor outtakeMotor = null;
+    private Servo outtakeServo = null;
+    private CRServo ballPusher = null;
+
+
+    @Override
+    public void runOpMode() {
+
+        // Initialize the hardware variables. Note that the strings used here as parameters
+        // to 'get' must correspond to the names assigned during robot configuration.
+        leftFrontDrive  = hardwareMap.get(DcMotor.class, "LF");
+        rightFrontDrive = hardwareMap.get(DcMotor.class, "RF");
+        leftBackDrive  = hardwareMap.get(DcMotor.class, "LB");
+        rightBackDrive = hardwareMap.get(DcMotor.class, "RB");
+
+        outtakeMotor = hardwareMap.get(DcMotor.class, "outtake");
+        outtakeServo = hardwareMap.get(Servo.class, "otServo");
+
+        ballPusher = hardwareMap.get(CRServo.class, "ballPusher");
+
+
+
+        //outtake = hardwareMap.get(DcMotor.class, "outtake");
+
+        // Most robots need the motor on one side to be reversed to drive forward.
+        // Reverse the motor that runs backwards when connected directly to the battery.
+        leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
+        rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightBackDrive.setDirection(DcMotor.Direction.FORWARD);
+
+        outtakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        outtakeServo.setDirection(Servo.Direction.REVERSE);
+
+        ballPusher.setDirection(CRServo.Direction.FORWARD);
+        ballPusher.resetDeviceConfigurationForOpMode();
+
+
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
+
+        // Wait for the game to start (driver presses PLAY)
+        waitForStart();
+
+        double firstOuttakePower = 0.95;
+
+        outtakeServo.setPosition(0.5);
+        ballPusher.setPower(-1);
+
+
+        //Shoot for 3.5 seconds
+
+        shootArtifacts(4, firstOuttakePower, 3000);
+        sleep(500);
+
+        double drivePower = 0.5; // Example power
+        long driveDurationMs = 500; // Example duration for 4 feet
+
+
+        setDrivePower(drivePower, drivePower, drivePower, drivePower);
+        sleep(driveDurationMs);
+        stopDriveMotors();
+
+
+
+
+
+        /*
+        double turnPower = 1; // Example power
+        long turnDurationMs = 700; // Example duration for turn
+
+
+        // To turn right
+        setDrivePower(turnPower, -turnPower, turnPower, -turnPower);
+        sleep(turnDurationMs);
+
+        drivePower = 0.5; // Example power
+        driveDurationMs = 3500; // Example duration for 4 feet
+
+        setDrivePower(-drivePower, -drivePower, -drivePower, -drivePower);
+        sleep(driveDurationMs);
+        stopDriveMotors();
+        */
+
+        telemetry.addData("Status", "Done");
+        telemetry.update();
+    }
+
+    // Helper method to set power to all drive motors
+    public void setDrivePower(double lfPower, double rfPower, double lbPower, double rbPower) {
+        leftFrontDrive.setPower(lfPower);
+        rightFrontDrive.setPower(rfPower);
+        leftBackDrive.setPower(lbPower);
+        rightBackDrive.setPower(rbPower);
+    }
+
+    public void shootArtifacts(int amount, double otPower, int rampUpSpeed) {
+        outtakeMotor.setPower(otPower);
+        sleep(rampUpSpeed);
+        for (int i = 1; i <= amount; i++) {
+                outtakeServo.setPosition(0.5);
+                sleep(800);
+                outtakeServo.setPosition(1);
+                sleep(800);
+        }
+        outtakeMotor.setPower(0);
+        sleep(500);
+    }
+
+    // Helper method to stop all drive motors
+    public void stopDriveMotors() {
+        setDrivePower(0, 0, 0, 0);
+    }
+}
