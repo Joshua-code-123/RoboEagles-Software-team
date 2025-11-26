@@ -108,6 +108,8 @@ public class TeleopOnlyMovement_WEBCAM_Untested extends LinearOpMode {
         boolean lastAPressed1 = false;
         boolean lastBPressed1 = false;
 
+        double outtakePower = 0.5;
+
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             double max;
@@ -132,8 +134,6 @@ public class TeleopOnlyMovement_WEBCAM_Untested extends LinearOpMode {
 
             // Telemetry using the same list
             telemetryAprilTag(currentDetections);
-            telemetry.update();
-
 
             AprilTagDetection desiredTag = null; //Store useful tag
 
@@ -167,6 +167,10 @@ public class TeleopOnlyMovement_WEBCAM_Untested extends LinearOpMode {
                     frontRightPower = -0.3;
                     backRightPower = -0.3;
                 }
+            }
+
+            if(desiredTag != null){
+                outtakePower = ((1.0/260.0)*(desiredTag.ftcPose.y) + (147.0/260.0));
             }
 
             lastAPressed1 = aPressed1;
@@ -212,6 +216,9 @@ public class TeleopOnlyMovement_WEBCAM_Untested extends LinearOpMode {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", frontLeftPower, frontRightPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", backLeftPower, backRightPower);
+
+            telemetry.addData("Outtake Power", "%4.2f", outtakePower);
+
             telemetry.update();
         }
 
