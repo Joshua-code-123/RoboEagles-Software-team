@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name="Robot: Testing Red Goal Encoders", group="Robot")
+@Autonomous(name="Testing Red Goal Encoders", group="Robot")
 //@Disabled
 public class EncodersTestingRedGoal extends LinearOpMode {
 
@@ -20,7 +20,7 @@ public class EncodersTestingRedGoal extends LinearOpMode {
 
     static final double COUNTS_PER_MOTOR_REV = 384.5;
     static final double DRIVE_GEAR_REDUCTION = 1.0;     // No External Gearing
-    static final double WHEEL_DIAMETER_INCHES = 4.0;    // Wheel diameter
+    static final double WHEEL_DIAMETER_INCHES = 4.09;    // Wheel diameter
     static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_INCHES * 3.1415);
     static final double DRIVE_SPEED = 0.6;
