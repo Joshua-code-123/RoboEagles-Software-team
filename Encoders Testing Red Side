@@ -8,8 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name="Robot: Wait 2s then Drive Forward", group="Robot")
-@Disabled
+@Autonomous(name="Testing Red Side Encoders", group="Robot")
 public class EncodersTestingRedSide extends LinearOpMode {
 
     /* Declare OpMode members. */
@@ -20,10 +19,10 @@ public class EncodersTestingRedSide extends LinearOpMode {
 
     static final double COUNTS_PER_MOTOR_REV = 384.5;
     static final double DRIVE_GEAR_REDUCTION = 1.0;     // No External Gearing
-    static final double WHEEL_DIAMETER_INCHES = 4.0;    // Wheel diameter
+    static final double WHEEL_DIAMETER_INCHES = 4.09;    // Wheel diameter
     static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_INCHES * 3.1415);
-    static final double DRIVE_SPEED = 0.6;
+    static final double DRIVE_SPEED = 0.4;
 
     @Override
     public void runOpMode() {
@@ -32,14 +31,19 @@ public class EncodersTestingRedSide extends LinearOpMode {
         leftDrive  = hardwareMap.get(DcMotor.class, "LF");
         rightDrive = hardwareMap.get(DcMotor.class, "RF");
 
+
         leftDrive.setDirection(DcMotor.Direction.REVERSE);
         rightDrive.setDirection(DcMotor.Direction.FORWARD);
+
+        leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
 
         leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -50,8 +54,10 @@ public class EncodersTestingRedSide extends LinearOpMode {
         //  Step 1: Wait 2 seconds/shoot 
         sleep(2000);
 
-        //  Step 2: Drive forward 24 inches 
-        encoderDrive(DRIVE_SPEED, 24, 24, 5.0);
+        //  Step 2: Drive forward 40 inches 
+        encoderDrive(DRIVE_SPEED, 40, 40, 16.0);
+
+
 
         // Done
         telemetry.addData("Path", "Complete");
